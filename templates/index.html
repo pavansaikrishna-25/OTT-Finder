@@ -1,0 +1,655 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>OTT Finder</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="hero">
+
+    <div class="hero-content">
+
+
+        <div class="brand">
+
+            <span class="brand-icon">
+                OTT
+            </span>
+
+            <span>
+                OTT Finder
+            </span>
+
+        </div>
+
+
+        <h1>
+            Find Where to Watch
+        </h1>
+
+
+        <p class="subtitle">
+            Search for movies and web series
+            and discover where they are streaming.
+        </p>
+
+
+        <form
+            action="/search"
+            method="GET"
+            class="search-box"
+        >
+
+            <input
+                type="text"
+                name="query"
+                placeholder="Search for a movie or web series..."
+                value="{{ query or '' }}"
+                required
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main>
+
+
+    <!-- =================================================
+         SEARCH RESULTS
+    ================================================== -->
+
+    {% if query %}
+
+
+        <div class="results-header">
+
+            <div>
+
+                <div class="results-label">
+                    SEARCH RESULTS
+                </div>
+
+                <h2>
+                    Results for "{{ query }}"
+                </h2>
+
+            </div>
+
+
+            {% if results %}
+
+                <div class="result-count">
+                    {{ results|length }} results
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             DID YOU MEAN
+        ================================================== -->
+
+        {% if suggestion %}
+
+            <div class="suggestion-box">
+
+                Did you mean
+
+                <a
+                    href="{{ url_for('search') }}?query={{ suggestion.title }}"
+                >
+                    {{ suggestion.title }}
+                </a>
+
+                ?
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             SEARCH RESULT CARDS
+        ================================================== -->
+
+        {% if results %}
+
+
+            <div class="movie-grid">
+
+
+                {% for movie in results %}
+
+
+                    <a
+                        href="{{ url_for(
+                            'details',
+                            media_type=movie.media_type,
+                            media_id=movie.id
+                        ) }}"
+                        class="movie-link"
+                    >
+
+
+                        <div class="movie-card">
+
+
+                            <!-- POSTER -->
+
+                            <div class="poster-wrapper">
+
+
+                                {% if movie.poster_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                        alt="{{ movie.title or movie.name }}"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="no-poster">
+                                        No Poster
+                                    </div>
+
+                                {% endif %}
+
+
+                                <div class="poster-overlay">
+                                    View OTT Availability
+                                </div>
+
+
+                            </div>
+
+
+                            <!-- INFO -->
+
+                            <div class="movie-info">
+
+
+                                <h3>
+                                    {{ movie.title or movie.name }}
+                                </h3>
+
+
+                                <div>
+
+
+                                    {% if movie.media_type == "movie" %}
+
+                                        <span class="type-badge">
+                                            Movie
+                                        </span>
+
+
+                                        <span class="movie-year">
+
+                                            {{
+                                                movie.release_date[:4]
+                                                if movie.release_date
+                                                else "N/A"
+                                            }}
+
+                                        </span>
+
+
+                                    {% else %}
+
+
+                                        <span class="type-badge">
+                                            TV Series
+                                        </span>
+
+
+                                        <span class="movie-year">
+
+                                            {{
+                                                movie.first_air_date[:4]
+                                                if movie.first_air_date
+                                                else "N/A"
+                                            }}
+
+                                        </span>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+                                <!-- RATING -->
+
+                                <div class="rating">
+
+                                    <span class="star">
+                                        ★
+                                    </span>
+
+                                    <span>
+                                        {{ movie.vote_average|round(1) }}
+                                    </span>
+
+                                </div>
+
+
+                                <!-- LANGUAGES -->
+
+                                {% if movie.languages %}
+
+
+                                    <div class="card-languages">
+
+
+                                        <span class="language-label">
+                                            Available Languages
+                                        </span>
+
+
+                                        <div class="card-language-list">
+
+
+                                            {% for language in movie.languages[:3] %}
+
+                                                <span class="card-language">
+                                                    {{ language }}
+                                                </span>
+
+                                            {% endfor %}
+
+
+                                            {% if movie.languages|length > 3 %}
+
+                                                <span class="card-language more-language">
+
+                                                    +{{ movie.languages|length - 3 }}
+
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </a>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- NO RESULTS -->
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ?
+                </div>
+
+                <h2>
+                    No results found
+                </h2>
+
+                <p>
+                    We couldn't find a movie or web series
+                    matching "{{ query }}".
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+        <!-- =================================================
+             SIMILAR TITLES
+        ================================================== -->
+
+        {% if similar_titles %}
+
+
+            <section class="top-picks-section">
+
+
+                <div class="top-picks-heading">
+
+
+                    <div>
+
+                        <div class="results-label">
+                            YOU MAY ALSO LIKE
+                        </div>
+
+                        <h2>
+                            🎬 Similar Titles
+                        </h2>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="movie-grid">
+
+
+                    {% for movie in similar_titles %}
+
+
+                        <a
+                            href="{{ url_for(
+                                'details',
+                                media_type=movie.media_type,
+                                media_id=movie.id
+                            ) }}"
+                            class="movie-link"
+                        >
+
+
+                            <div class="movie-card">
+
+
+                                <div class="poster-wrapper">
+
+
+                                    {% if movie.poster_path %}
+
+                                        <img
+                                            src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                            alt="{{ movie.title or movie.name }}"
+                                            loading="lazy"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="no-poster">
+                                            No Poster
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <div class="poster-overlay">
+                                        View OTT Availability
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="movie-info">
+
+
+                                    <h3>
+                                        {{ movie.title or movie.name }}
+                                    </h3>
+
+
+                                    {% if movie.media_type == "movie" %}
+
+                                        <span class="type-badge">
+                                            Movie
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="type-badge">
+                                            TV Series
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    <div class="rating">
+
+                                        <span class="star">
+                                            ★
+                                        </span>
+
+                                        <span>
+                                            {{ movie.vote_average|round(1) }}
+                                        </span>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </a>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </section>
+
+
+        {% endif %}
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             HOMEPAGE TOP 10
+        ================================================== -->
+
+        {% if top_picks %}
+
+
+            <section class="top-picks-section homepage-picks">
+
+
+                <div class="top-picks-heading">
+
+
+                    <div>
+
+                        <div class="results-label">
+                            TRENDING NOW
+                        </div>
+
+                        <h2>
+                            🔥 Top 10 Picks
+                        </h2>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="movie-grid">
+
+
+                    {% for movie in top_picks %}
+
+
+                        <a
+                            href="{{ url_for(
+                                'details',
+                                media_type=movie.media_type,
+                                media_id=movie.id
+                            ) }}"
+                            class="movie-link"
+                        >
+
+
+                            <div class="movie-card">
+
+
+                                <div class="poster-wrapper">
+
+
+                                    {% if movie.poster_path %}
+
+                                        <img
+                                            src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                            alt="{{ movie.title or movie.name }}"
+                                            loading="lazy"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="no-poster">
+                                            No Poster
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <div class="poster-overlay">
+                                        View OTT Availability
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="movie-info">
+
+
+                                    <h3>
+                                        {{ movie.title or movie.name }}
+                                    </h3>
+
+
+                                    {% if movie.media_type == "movie" %}
+
+                                        <span class="type-badge">
+                                            Movie
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="type-badge">
+                                            TV Series
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    <div class="rating">
+
+                                        <span class="star">
+                                            ★
+                                        </span>
+
+                                        <span>
+                                            {{ movie.vote_average|round(1) }}
+                                        </span>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </a>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </section>
+
+
+        {% endif %}
+
+
+    {% endif %}
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <p>
+        OTT Finder
+    </p>
+
+    <span>
+        Find where your favorite movies and series are streaming.
+    </span>
+
+</footer>
+
+
+</body>
+
+</html>

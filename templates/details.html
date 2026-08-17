@@ -1,0 +1,428 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ title_data.title or title_data.name }} | OTT Finder
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<header class="details-header">
+
+    <div class="details-header-content">
+
+        <div class="brand">
+            <span class="brand-icon">OTT</span>
+            <span>OTT Finder</span>
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="details-page">
+
+
+    <!-- TITLE INFORMATION -->
+
+    <section class="title-section">
+
+
+        <div class="title-poster">
+
+            {% if title_data.poster_path %}
+
+                <img
+                    src="https://image.tmdb.org/t/p/w500{{ title_data.poster_path }}"
+                    alt="{{ title_data.title or title_data.name }}"
+                >
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="title-content">
+
+
+            <h1>
+                {{ title_data.title or title_data.name }}
+            </h1>
+
+
+            <div class="title-meta">
+
+
+                {% if media_type == "movie" %}
+
+                    <span class="meta-badge">
+                        Movie
+                    </span>
+
+                    {% if title_data.release_date %}
+
+                        <span>
+                            {{ title_data.release_date[:4] }}
+                        </span>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <span class="meta-badge">
+                        TV Series
+                    </span>
+
+                    {% if title_data.first_air_date %}
+
+                        <span>
+                            {{ title_data.first_air_date[:4] }}
+                        </span>
+
+                    {% endif %}
+
+                {% endif %}
+
+
+                <span class="detail-rating">
+                    ★ {{ title_data.vote_average|round(1) }}
+                </span>
+
+
+            </div>
+
+
+            {% if title_data.overview %}
+
+                <p class="overview">
+                    {{ title_data.overview }}
+                </p>
+
+            {% endif %}
+
+
+            <!-- LANGUAGES -->
+
+            {% if title_data.spoken_languages %}
+
+                <div class="detail-languages">
+
+                    <strong>
+                        Available Languages
+                    </strong>
+
+                    <div class="language-list">
+
+                        {% for language in title_data.spoken_languages %}
+
+                            {% if language.english_name %}
+
+                                <span class="language-tag">
+                                    {{ language.english_name }}
+                                </span>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- OTT AVAILABILITY -->
+
+    <section class="watch-section">
+
+
+        <div class="section-heading">
+
+            <span class="section-label">
+                WHERE TO WATCH
+            </span>
+
+            <h2>
+                Streaming Availability in India
+            </h2>
+
+        </div>
+
+
+        {% if provider_data %}
+
+
+            <!-- STREAMING -->
+
+            {% if provider_data.flatrate %}
+
+                <div class="provider-section">
+
+                    <h3>
+                        Streaming
+                    </h3>
+
+
+                    <div class="provider-grid">
+
+
+                        {% for provider in provider_data.flatrate %}
+
+                            <div class="provider-card">
+
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w92{{ provider.logo_path }}"
+                                    alt="{{ provider.provider_name }}"
+                                >
+
+
+                                <strong>
+                                    {{ provider.provider_name }}
+                                </strong>
+
+
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- FREE -->
+
+            {% if provider_data.free %}
+
+                <div class="provider-section">
+
+                    <h3>
+                        Free
+                    </h3>
+
+
+                    <div class="provider-grid">
+
+
+                        {% for provider in provider_data.free %}
+
+                            <div class="provider-card">
+
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w92{{ provider.logo_path }}"
+                                    alt="{{ provider.provider_name }}"
+                                >
+
+
+                                <strong>
+                                    {{ provider.provider_name }}
+                                </strong>
+
+
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- RENT -->
+
+            {% if provider_data.rent %}
+
+                <div class="provider-section">
+
+                    <h3>
+                        Rent
+                    </h3>
+
+
+                    <div class="provider-grid">
+
+
+                        {% for provider in provider_data.rent %}
+
+                            <div class="provider-card">
+
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w92{{ provider.logo_path }}"
+                                    alt="{{ provider.provider_name }}"
+                                >
+
+
+                                <strong>
+                                    {{ provider.provider_name }}
+                                </strong>
+
+
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- BUY -->
+
+            {% if provider_data.buy %}
+
+                <div class="provider-section">
+
+                    <h3>
+                        Buy
+                    </h3>
+
+
+                    <div class="provider-grid">
+
+
+                        {% for provider in provider_data.buy %}
+
+                            <div class="provider-card">
+
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w92{{ provider.logo_path }}"
+                                    alt="{{ provider.provider_name }}"
+                                >
+
+
+                                <strong>
+                                    {{ provider.provider_name }}
+                                </strong>
+
+
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- OPEN OPTIONS -->
+
+            {% if provider_data.link %}
+
+                <div class="watch-link">
+
+                    <a
+                        href="{{ provider_data.link }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Open Streaming Options
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+
+
+        {% else %}
+
+
+            <div class="no-availability">
+
+                <h3>
+                    Not currently available in India
+                </h3>
+
+                <p>
+                    We couldn't find streaming availability
+                    for this title in India.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+    <!-- BACK BUTTON -->
+
+    <div class="details-actions">
+
+        <a
+            href="/"
+            class="back-button"
+        >
+            Back to Search
+        </a>
+
+    </div>
+
+
+</main>
+
+
+<footer>
+
+    <p>
+        OTT Finder
+    </p>
+
+    <span>
+        Find where your favorite movies and series are streaming.
+    </span>
+
+</footer>
+
+
+</body>
+
+</html>
